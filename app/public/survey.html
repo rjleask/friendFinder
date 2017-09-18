@@ -1,0 +1,167 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>FriendFinder</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="styles1.css">
+
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.5.1/chosen.css"> -->
+</head>
+
+<body>
+  <div class="container">
+    <h2>Survey Questions</h2>
+    <hr>
+    <h3><strong>About You</strong></h3>
+    <h4>Name (Required)</h4>
+    <input type="text" name="" id="name" class="form-control text-control" required="">
+    <h4>Link to Photo Image (Required)</h4>
+    <input type="text" name="" id="photo" class="form-control text-control" required="">
+    <hr>
+    <div class="form-group">
+      <h3><strong>Question 1</strong></h3>
+      <h4>Your mind is always buzzing with unexplored ideas and plans.</h4>
+      <label for="sel1">Select list:</label>
+      <select class="form-control question-control" id="sel1" name="question">
+        <option></option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+      </select>
+      <h3><strong>Question 2</strong></h3>
+      <h4>Generally speaking, you rely more on your experience than your imagination.</h4>
+      <label for="sel2">Select list:</label>
+      <select class="form-control question-control" id="sel2" name="question">
+        <option></option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+      </select>
+      <h3><strong>Question 3</strong></h3>
+      <h4>You find it easy to stay relaxed and focused even when there is some pressure.</h4>
+      <label for="sel3">Select list:</label>
+      <select class="form-control question-control" id="sel3" name="question">
+        <option></option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+      </select>
+      <h3><strong>Question 4</strong></h3>
+      <h4>You rarely do something just out of sheer curiosity.</h4>
+      <label for="sel4">Select list:</label>
+      <select class="form-control question-control" id="sel4" name="question">
+        <option></option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+      </select>
+      <h3><strong>Question 5</strong></h3>
+      <h4>People can rarely upset you.</h4>
+      <label for="sel5">Select list:</label>
+      <select class="form-control question-control" id="sel5" name="question">
+        <option></option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+      </select>
+    </div>
+    <br>
+    <br>
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-primary btn-lg btn-block" id="submit"><i class="fa fa-check-circle" aria-hidden="true"></i> Submit
+    </button>
+    <hr>
+    <footer class="footer">
+      <div class="container">
+        <p><a href="/api/friends">API Friends List</a> | <a href="https://github.com/rjleask/friendFinder">GitHub Repo</a></p>
+      </div>
+    </footer>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" role="document" id="resultsModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h2 class="modal-title"><strong>Best Friend Match</strong></h2>
+        </div>
+        <div class="modal-body">
+          <h2 id="matchName"></h2>
+          <img id="matchPhoto" src="" alt="">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.5.1/chosen.jquery.min.js"></script>
+  <script type="text/javascript">
+  $("body").on("click", "#submit", function() {
+
+    function validateForm() {
+    var isValid = true;
+    $('.form-control').each(function() {
+      if ($(this).val() === '')
+        isValid = false;
+    });
+    return isValid;
+  }
+
+  // If all required fields are filled
+  if (validateForm() == true) {
+
+    var currentUrl = window.location.origin;
+    var potentialFriend = {
+      name: $("#name").val().trim(),
+      photo: $("#photo").val().trim(),
+      scores: [$("#sel1").val(),
+        $("#sel2").val(),
+        $("#sel3").val(),
+        $("#sel4").val(),
+        $("#sel5").val()
+      ]
+    }
+    // send 
+    $.post(currentUrl + "/api/friends", potentialFriend, function(data) {
+      $("#matchName").text(data.name);
+      $("#matchPhoto").attr("src", data.photo);
+      $("#resultsModal").modal("toggle");
+
+    });
+    // set all values back to blanks
+    potentialFriend = {
+      name: $("#name").val(""),
+      photo: $("#photo").val(""),
+      scores: [$("#sel1").val(""),
+        $("#sel2").val(""),
+        $("#sel3").val(""),
+        $("#sel4").val(""),
+        $("#sel5").val("")
+      ]
+    }
+
+  } else {
+    alert("Please make sure all answers are filled out!");
+  }
+  return false;
+  })
+  </script>
+</body>
+
+</html>
